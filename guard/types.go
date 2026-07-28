@@ -10,7 +10,7 @@ package guard
 
 // Evidence 는 답이 벗어나선 안 되는, 검색된 근거 조각 하나다.
 type Evidence struct {
-	ID   int    // 1부터 시작하는 인용 번호. 답에서 [ID] 로 참조된다.
+	ID   int    // 인용 번호. 답에서 [ID] 로 참조된다. 관례상 1부터지만 임의값·비연속 허용.
 	Text string
 }
 

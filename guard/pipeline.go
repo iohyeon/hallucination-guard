@@ -66,7 +66,7 @@ func (p *Pipeline) Run(ctx context.Context, query string, evidence []Evidence) (
 	r.Answer = answer
 
 	// 검출(싼 규칙): 인용 검증.
-	r.CitationIssues = CheckCitations(answer, len(evidence))
+	r.CitationIssues = CheckCitations(answer, evidence)
 
 	// 검출(싼 신호): 어휘 groundedness.
 	g := LexicalGroundedness(answer, evidence)
