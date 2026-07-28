@@ -24,7 +24,7 @@ func TestCheckCitations_InvalidCitationFlagged(t *testing.T) {
 }
 
 func TestCheckCitations_ShortFragmentSkipped(t *testing.T) {
-	// 3 토큰 미만 조각은 사실 주장으로 보지 않는다.
+	// 1 토큰 이하 조각은 사실 주장으로 보지 않는다.
 	if issues := CheckCitations("네.", 1); len(issues) != 0 {
 		t.Fatalf("짧은 조각을 이슈로 잡음: %+v", issues)
 	}

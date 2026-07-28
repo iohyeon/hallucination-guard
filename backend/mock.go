@@ -41,7 +41,10 @@ func firstEvidenceAsAnswer(prompt string) string {
 	for _, line := range strings.Split(prompt, "\n") {
 		line = strings.TrimSpace(line)
 		if strings.HasPrefix(line, "[1]") {
-			return strings.TrimSpace(strings.TrimPrefix(line, "[1]")) + " [1]"
+			text := strings.TrimSpace(strings.TrimPrefix(line, "[1]"))
+			// 문장 끝 구두점 뒤가 아니라 문장에 인용이 붙도록 정리한다.
+			text = strings.TrimRight(text, " .!?。！？")
+			return text + " [1]"
 		}
 	}
 	return "문서에 근거 없음"

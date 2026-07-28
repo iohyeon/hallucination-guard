@@ -16,7 +16,7 @@ func CheckCitations(answer string, evidenceCount int) []CitationIssue {
 	var issues []CitationIssue
 	for _, raw := range sentenceSplit.Split(answer, -1) {
 		s := strings.TrimSpace(raw)
-		if len(tokenize(s)) < 3 { // 조각은 사실 주장으로 보지 않고 건너뛴다
+		if len(tokenize(s)) < 2 { // 1토큰 이하 조각은 사실 주장으로 보지 않고 건너뛴다
 			continue
 		}
 		nums := citationRe.FindAllStringSubmatch(s, -1)
