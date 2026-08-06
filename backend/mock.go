@@ -14,6 +14,9 @@ type Mock struct {
 	Answer string
 	// JudgeGrounded 는 judge 프롬프트에 대한 verdict 를 제어한다.
 	JudgeGrounded bool
+	// JudgeCalls 는 judge 프롬프트가 몇 번 호출됐는지 센다. 조기 단락으로
+	// 비싼 judge 호출이 실제로 생략되는지 테스트에서 검증하는 데 쓴다.
+	JudgeCalls int
 }
 
 // NewMock 은 기본적으로 grounded 판정을 내리는 mock 을 만든다.
@@ -24,6 +27,7 @@ func (m *Mock) Name() string { return "mock" }
 // Generate 는 judge 프롬프트와 생성 프롬프트를 sentinel 로 구분해 응답한다.
 func (m *Mock) Generate(_ context.Context, system, user string) (string, error) {
 	if strings.Contains(system, "HALLUGUARD_JUDGE") {
+		m.JudgeCalls++
 		if m.JudgeGrounded {
 			return `{"grounded": true, "unsupported": [], "reason": "mock: 모든 주장이 근거로 뒷받침됨"}`, nil
 		}

@@ -55,6 +55,41 @@ func TestPipeline_FabricatedCitationAbstains(t *testing.T) {
 	}
 }
 
+// 조기 단락: 허위 인용이 있으면 비싼 judge 를 호출하지 않고 즉시 기권한다.
+func TestPipeline_InvalidCitationShortCircuitsBeforeJudge(t *testing.T) {
+	m := &backend.Mock{Answer: "지구는 평평하다 [9].", JudgeGrounded: true}
+	p := New(m, Default())
+	r, err := p.Run(context.Background(), "Loopers 아키텍처 계층", loopersEvidence())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if r.Decision != Abstain {
+		t.Fatalf("허위 인용 → 기권이어야 함: %s (%v)", r.Decision, r.Reasons)
+	}
+	if m.JudgeCalls != 0 {
+		t.Fatalf("허위 인용 케이스는 judge 를 호출하지 않아야 함: JudgeCalls=%d", m.JudgeCalls)
+	}
+	if r.Verdict != nil {
+		t.Fatalf("judge 를 건너뛰었으므로 Verdict 는 nil 이어야 함: %+v", r.Verdict)
+	}
+}
+
+// 정상 케이스(허위 인용 없음)는 judge 를 정확히 한 번 호출한다.
+func TestPipeline_ValidAnswerCallsJudge(t *testing.T) {
+	m := backend.NewMock() // 기본 답: 첫 근거 [1] 을 인용 → 유효
+	p := New(m, Default())
+	r, err := p.Run(context.Background(), "Loopers 아키텍처 계층", loopersEvidence())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if m.JudgeCalls != 1 {
+		t.Fatalf("정상 케이스는 judge 를 한 번 호출해야 함: JudgeCalls=%d", m.JudgeCalls)
+	}
+	if r.Verdict == nil {
+		t.Fatalf("judge 가 호출됐으면 Verdict 가 기록돼야 함")
+	}
+}
+
 // judge 가 미충실로 판정하면 반려된다.
 func TestPipeline_JudgeUngroundedAbstains(t *testing.T) {
 	m := &backend.Mock{Answer: "아키텍처는 4계층이다 [1].", JudgeGrounded: false}
