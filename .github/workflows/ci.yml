@@ -1,0 +1,18 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod   # go.mod의 go 지시자 버전을 그대로 사용
+      - run: go build ./...
+      - run: go vet ./...
+      - run: go test ./...          # mock 백엔드로 키·네트워크 없이 결정적 검증.
